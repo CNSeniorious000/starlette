@@ -57,9 +57,7 @@ class Response:
     def render(self, content: typing.Any) -> bytes:
         if content is None:
             return b""
-        if isinstance(content, bytes):
-            return content
-        return content.encode(self.charset)
+        return content if isinstance(content, bytes) else content.encode(self.charset)
 
     def init_headers(
         self, headers: typing.Optional[typing.Mapping[str, str]] = None
@@ -81,7 +79,8 @@ class Response:
         if (
             body is not None
             and populate_content_length
-            and not (self.status_code < 200 or self.status_code in (204, 304))
+            and self.status_code >= 200
+            and self.status_code not in (204, 304)
         ):
             content_length = str(len(body))
             raw_headers.append((b"content-length", content_length.encode("latin-1")))
@@ -89,7 +88,7 @@ class Response:
         content_type = self.media_type
         if content_type is not None and populate_content_type:
             if content_type.startswith("text/"):
-                content_type += "; charset=" + self.charset
+                content_type += f"; charset={self.charset}"
             raw_headers.append((b"content-type", content_type.encode("latin-1")))
 
         self.raw_headers = raw_headers
@@ -303,13 +302,9 @@ class FileResponse(Response):
         if self.filename is not None:
             content_disposition_filename = quote(self.filename)
             if content_disposition_filename != self.filename:
-                content_disposition = "{}; filename*=utf-8''{}".format(
-                    content_disposition_type, content_disposition_filename
-                )
+                content_disposition = f"{content_disposition_type}; filename*=utf-8''{content_disposition_filename}"
             else:
-                content_disposition = '{}; filename="{}"'.format(
-                    content_disposition_type, self.filename
-                )
+                content_disposition = f'{content_disposition_type}; filename="{self.filename}"'
             self.headers.setdefault("content-disposition", content_disposition)
         self.stat_result = stat_result
         if stat_result is not None:
@@ -318,7 +313,7 @@ class FileResponse(Response):
     def set_stat_headers(self, stat_result: os.stat_result) -> None:
         content_length = str(stat_result.st_size)
         last_modified = formatdate(stat_result.st_mtime, usegmt=True)
-        etag_base = str(stat_result.st_mtime) + "-" + str(stat_result.st_size)
+        etag_base = f"{str(stat_result.st_mtime)}-{str(stat_result.st_size)}"
         etag = md5_hexdigest(etag_base.encode(), usedforsecurity=False)
 
         self.headers.setdefault("content-length", content_length)

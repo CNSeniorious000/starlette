@@ -13,10 +13,7 @@ _CallableType = typing.TypeVar("_CallableType", bound=typing.Callable)
 
 
 def has_required_scope(conn: HTTPConnection, scopes: typing.Sequence[str]) -> bool:
-    for scope in scopes:
-        if scope not in conn.auth.scopes:
-            return False
-    return True
+    return all(scope in conn.auth.scopes for scope in scopes)
 
 
 def requires(
@@ -29,7 +26,7 @@ def requires(
     def decorator(func: typing.Callable) -> typing.Callable:
         sig = inspect.signature(func)
         for idx, parameter in enumerate(sig.parameters.values()):
-            if parameter.name == "request" or parameter.name == "websocket":
+            if parameter.name in ["request", "websocket"]:
                 type_ = parameter.name
                 break
         else:

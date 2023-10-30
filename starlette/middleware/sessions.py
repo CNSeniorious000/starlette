@@ -32,7 +32,7 @@ class SessionMiddleware:
         self.session_cookie = session_cookie
         self.max_age = max_age
         self.path = path
-        self.security_flags = "httponly; samesite=" + same_site
+        self.security_flags = f"httponly; samesite={same_site}"
         if https_only:  # Secure flag can be used with HTTPS only
             self.security_flags += "; secure"
 

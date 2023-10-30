@@ -95,7 +95,7 @@ def test_websocket_send_and_receive_text(test_client_factory):
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.accept()
         data = await websocket.receive_text()
-        await websocket.send_text("Message was: " + data)
+        await websocket.send_text(f"Message was: {data}")
         await websocket.close()
 
     client = test_client_factory(app)
@@ -140,7 +140,7 @@ def test_websocket_iter_text(test_client_factory):
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.accept()
         async for data in websocket.iter_text():
-            await websocket.send_text("Message was: " + data)
+            await websocket.send_text(f"Message was: {data}")
 
     client = test_client_factory(app)
     with client.websocket_connect("/") as websocket:

@@ -112,7 +112,7 @@ def test_streaming_response(test_client_factory):
         )
         await response(scope, receive, send)
 
-    assert filled_by_bg_task == ""
+    assert not filled_by_bg_task
     client = test_client_factory(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
@@ -227,7 +227,7 @@ def test_file_response(tmpdir, test_client_factory):
         )
         await response(scope, receive, send)
 
-    assert filled_by_bg_task == ""
+    assert not filled_by_bg_task
     client = test_client_factory(app)
     response = client.get("/")
     expected_disposition = 'attachment; filename="example.png"'

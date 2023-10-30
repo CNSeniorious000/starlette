@@ -116,7 +116,7 @@ class Config:
     def _read_file(self, file_name: typing.Union[str, Path]) -> typing.Dict[str, str]:
         file_values: typing.Dict[str, str] = {}
         with open(file_name) as input_file:
-            for line in input_file.readlines():
+            for line in input_file:
                 line = line.strip()
                 if "=" in line and not line.startswith("#"):
                     key, value = line.split("=", 1)

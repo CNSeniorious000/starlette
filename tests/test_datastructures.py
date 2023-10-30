@@ -148,7 +148,7 @@ def test_headers():
 
 def test_mutable_headers():
     h = MutableHeaders()
-    assert dict(h) == {}
+    assert not dict(h)
     h["a"] = "1"
     assert dict(h) == {"a": "1"}
     h["a"] = "2"
@@ -314,7 +314,7 @@ def test_formdata():
     assert dict(form) == {"a": "456", "b": upload}
     assert (
         repr(form)
-        == "FormData([('a', '123'), ('a', '456'), ('b', " + repr(upload) + ")])"
+        == f"FormData([('a', '123'), ('a', '456'), ('b', {repr(upload)})])"
     )
     assert FormData(form) == form
     assert FormData({"a": "123", "b": "789"}) == FormData([("a", "123"), ("b", "789")])

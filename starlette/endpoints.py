@@ -37,8 +37,7 @@ class HTTPEndpoint:
         handler: typing.Callable[[Request], typing.Any] = getattr(
             self, handler_name, self.method_not_allowed
         )
-        is_async = is_async_callable(handler)
-        if is_async:
+        if is_async := is_async_callable(handler):
             response = await handler(request)
         else:
             response = await run_in_threadpool(handler, request)

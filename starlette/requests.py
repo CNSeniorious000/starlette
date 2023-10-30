@@ -42,12 +42,7 @@ def cookie_parser(cookie_string: str) -> typing.Dict[str, str]:
     """
     cookie_dict: typing.Dict[str, str] = {}
     for chunk in cookie_string.split(";"):
-        if "=" in chunk:
-            key, val = chunk.split("=", 1)
-        else:
-            # Assume an empty name per
-            # https://bugzilla.mozilla.org/show_bug.cgi?id=169091
-            key, val = "", chunk
+        key, val = chunk.split("=", 1) if "=" in chunk else ("", chunk)
         key, val = key.strip(), val.strip()
         if key or val:
             # unquote using Python's algorithm.
@@ -126,9 +121,7 @@ class HTTPConnection(typing.Mapping[str, typing.Any]):
     def cookies(self) -> typing.Dict[str, str]:
         if not hasattr(self, "_cookies"):
             cookies: typing.Dict[str, str] = {}
-            cookie_header = self.headers.get("cookie")
-
-            if cookie_header:
+            if cookie_header := self.headers.get("cookie"):
                 cookies = cookie_parser(cookie_header)
             self._cookies = cookies
         return self._cookies
@@ -137,9 +130,7 @@ class HTTPConnection(typing.Mapping[str, typing.Any]):
     def client(self) -> typing.Optional[Address]:
         # client is a 2 item tuple of (host, port), None or missing
         host_port = self.scope.get("client")
-        if host_port is not None:
-            return Address(*host_port)
-        return None
+        return Address(*host_port) if host_port is not None else None
 
     @property
     def session(self) -> typing.Dict[str, typing.Any]:
@@ -218,8 +209,7 @@ class Request(HTTPConnection):
         while True:
             message = await self._receive()
             if message["type"] == "http.request":
-                body = message.get("body", b"")
-                if body:
+                if body := message.get("body", b""):
                     yield body
                 if not message.get("more_body", False):
                     break

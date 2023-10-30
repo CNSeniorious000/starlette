@@ -56,7 +56,7 @@ def build_environ(scope: Scope, body: bytes) -> dict:
         # case
         value = value.decode("latin1")
         if corrected_name in environ:
-            value = environ[corrected_name] + "," + value
+            value = f"{environ[corrected_name]},{value}"
         environ[corrected_name] = value
     return environ
 

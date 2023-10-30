@@ -139,7 +139,7 @@ class StaticFiles:
                 if not scope["path"].endswith("/"):
                     # Directory URLs should redirect to always end in "/".
                     url = URL(scope=scope)
-                    url = url.replace(path=url.path + "/")
+                    url = url.replace(path=f"{url.path}/")
                     return RedirectResponse(url=url)
                 return self.file_response(full_path, stat_result, scope)
 

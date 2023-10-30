@@ -48,9 +48,7 @@ class BrotliResponder:
             body = message.get("body", b"")
             more_body = message.get("more_body", False)
             if len(body) < self.minimum_size and not more_body:
-                # Don't apply Brotli to small outgoing responses
-                await self.send(self.initial_message)
-                await self.send(message)
+                pass
             elif not more_body:
                 # Standard Brotli response
                 body = self.compressor.process(body) + self.compressor.finish()
@@ -61,8 +59,6 @@ class BrotliResponder:
                 headers["Content-Length"] = str(len(body))
                 message["body"] = body
 
-                await self.send(self.initial_message)
-                await self.send(message)
             else:
                 # Initial body in streaming Brotli response.
                 headers = MutableHeaders(raw=self.initial_message["headers"])
@@ -72,9 +68,9 @@ class BrotliResponder:
 
                 message["body"] = self.compressor.process(body) + self.compressor.flush()
 
-                await self.send(self.initial_message)
-                await self.send(message)
-
+            # Don't apply Brotli to small outgoing responses
+            await self.send(self.initial_message)
+            await self.send(message)
         elif message_type == "http.response.body":
             # Remaining body in streaming Brotli response
             body = message.get("body", b"")

@@ -67,12 +67,11 @@ class BaseSchemaGenerator:
 
             elif inspect.isfunction(route.endpoint) or inspect.ismethod(route.endpoint):
                 path = self._remove_converter(route.path)
-                for method in route.methods or ["GET"]:
-                    if method == "HEAD":
-                        continue
-                    endpoints_info.append(
-                        EndpointInfo(path, method.lower(), route.endpoint)
-                    )
+                endpoints_info.extend(
+                    EndpointInfo(path, method.lower(), route.endpoint)
+                    for method in route.methods or ["GET"]
+                    if method != "HEAD"
+                )
             else:
                 path = self._remove_converter(route.path)
                 for method in ["get", "post", "put", "patch", "delete", "options"]:
@@ -109,12 +108,7 @@ class BaseSchemaGenerator:
 
         parsed = yaml.safe_load(docstring)
 
-        if not isinstance(parsed, dict):
-            # A regular docstring (not yaml formatted) can return
-            # a simple string here, which wouldn't follow the schema.
-            return {}
-
-        return parsed
+        return {} if not isinstance(parsed, dict) else parsed
 
     def OpenAPIResponse(self, request: Request) -> Response:
         routes = request.app.routes

@@ -44,7 +44,7 @@ class TrustedHostMiddleware:
             ):
                 is_valid_host = True
                 break
-            elif "www." + host == pattern:
+            elif f"www.{host}" == pattern:
                 found_www_redirect = True
 
         if is_valid_host:
@@ -53,7 +53,7 @@ class TrustedHostMiddleware:
             response: Response
             if found_www_redirect and self.www_redirect:
                 url = URL(scope=scope)
-                redirect_url = url.replace(netloc="www." + url.netloc)
+                redirect_url = url.replace(netloc=f"www.{url.netloc}")
                 response = RedirectResponse(url=str(redirect_url))
             else:
                 response = PlainTextResponse("Invalid host header", status_code=400)

@@ -144,7 +144,7 @@ class WebSocketTestSession:
         self.send({"type": "websocket.receive", "bytes": data})
 
     def send_json(self, data: typing.Any, mode: str = "text") -> None:
-        assert mode in ["text", "binary"]
+        assert mode in {"text", "binary"}
         text = json.dumps(data)
         if mode == "text":
             self.send({"type": "websocket.receive", "text": text})
@@ -171,13 +171,10 @@ class WebSocketTestSession:
         return message["bytes"]
 
     def receive_json(self, mode: str = "text") -> typing.Any:
-        assert mode in ["text", "binary"]
+        assert mode in {"text", "binary"}
         message = self.receive()
         self._raise_on_close(message)
-        if mode == "text":
-            text = message["text"]
-        else:
-            text = message["bytes"].decode("utf-8")
+        text = message["text"] if mode == "text" else message["bytes"].decode("utf-8")
         return json.loads(text)
 
 
@@ -421,10 +418,6 @@ class TestClient(httpx.Client):
             redirect = allow_redirects
         if follow_redirects is not None:
             redirect = follow_redirects
-        elif allow_redirects is not None and follow_redirects is not None:
-            raise RuntimeError(  # pragma: no cover
-                "Cannot use both `allow_redirects` and `follow_redirects`."
-            )
         return redirect
 
     def request(  # type: ignore[override]

@@ -87,9 +87,7 @@ async def app_read_body(scope, receive, send):
     # Read bytes, to force request.stream() to return the already parsed body
     await request.body()
     data = await request.form()
-    output = {}
-    for key, value in data.items():
-        output[key] = value
+    output = dict(data.items())
     await request.close()
     response = JSONResponse(output)
     await response(scope, receive, send)

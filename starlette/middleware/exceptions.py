@@ -45,10 +45,14 @@ class ExceptionMiddleware:
     def _lookup_exception_handler(
         self, exc: Exception
     ) -> typing.Optional[typing.Callable]:
-        for cls in type(exc).__mro__:
-            if cls in self._exception_handlers:
-                return self._exception_handlers[cls]
-        return None
+        return next(
+            (
+                self._exception_handlers[cls]
+                for cls in type(exc).__mro__
+                if cls in self._exception_handlers
+            ),
+            None,
+        )
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] not in ("http", "websocket"):

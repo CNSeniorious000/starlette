@@ -45,10 +45,7 @@ class BaseHTTPMiddleware:
                     task_group.start_soon(wrap, response_sent.wait)
                     message = await wrap(request.receive)
 
-                if response_sent.is_set():
-                    return {"type": "http.disconnect"}
-
-                return message
+                return {"type": "http.disconnect"} if response_sent.is_set() else message
 
             async def close_recv_stream_on_response_sent() -> None:
                 await response_sent.wait()

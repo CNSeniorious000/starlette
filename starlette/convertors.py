@@ -22,7 +22,7 @@ class StringConvertor(Convertor):
         return value
 
     def to_string(self, value: str) -> str:
-        value = str(value)
+        value = value
         assert "/" not in value, "May not contain path separators"
         assert value, "Must not be empty"
         return value
@@ -32,10 +32,10 @@ class PathConvertor(Convertor):
     regex = ".*"
 
     def convert(self, value: str) -> str:
-        return str(value)
+        return value
 
     def to_string(self, value: str) -> str:
-        return str(value)
+        return value
 
 
 class IntegerConvertor(Convertor):
@@ -45,7 +45,7 @@ class IntegerConvertor(Convertor):
         return int(value)
 
     def to_string(self, value: int) -> str:
-        value = int(value)
+        value = value
         assert value >= 0, "Negative integers are not supported"
         return str(value)
 
@@ -57,7 +57,7 @@ class FloatConvertor(Convertor):
         return float(value)
 
     def to_string(self, value: float) -> str:
-        value = float(value)
+        value = value
         assert value >= 0.0, "Negative floats are not supported"
         assert not math.isnan(value), "NaN values are not supported"
         assert not math.isinf(value), "Infinite values are not supported"

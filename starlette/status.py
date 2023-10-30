@@ -184,8 +184,7 @@ def __getattr__(name: str) -> int:
         "WS_1004_NO_STATUS_RCVD": "WS_1005_NO_STATUS_RCVD",
         "WS_1005_ABNORMAL_CLOSURE": "WS_1006_ABNORMAL_CLOSURE",
     }
-    deprecated = __deprecated__.get(name)
-    if deprecated:
+    if deprecated := __deprecated__.get(name):
         warnings.warn(
             f"'{name}' is deprecated. Use '{deprecation_changes[name]}' instead.",
             category=DeprecationWarning,

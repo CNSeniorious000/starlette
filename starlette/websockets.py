@@ -132,10 +132,7 @@ class WebSocket(HTTPConnection):
         message = await self.receive()
         self._raise_on_disconnect(message)
 
-        if mode == "text":
-            text = message["text"]
-        else:
-            text = message["bytes"].decode("utf-8")
+        text = message["text"] if mode == "text" else message["bytes"].decode("utf-8")
         return json.loads(text)
 
     async def iter_text(self) -> typing.AsyncIterator[str]:
